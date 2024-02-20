@@ -1,0 +1,36 @@
+import os
+import requests
+from bs4 import BeautifulSoup
+import pdfkit
+from multiprocessing import Pool
+
+output_folder = "PDFs"
+
+config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+
+
+
+def get_page_content(url):
+    response = requests.get(url)
+    html_content = response.text
+    return html_content
+
+
+def parse_and_save_pdf(page_url):
+    page_content = get_page_content(page_url)
+    soup = BeautifulSoup(page_content, 'html.parser')
+    pdf_filename = os.path.join(output_folder, f"{soup.title.text}.pdf")
+    pdfkit.from_url(page_url, pdf_filename, configuration=config)
+    print(f"PDF {pdf_filename}")
+
+
+if __name__ == "__main__":
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    pages = [
+        "https://tilshunos.com/omonims/"
+    ]
+
+    with Pool() as pool:
+        pool.map(parse_and_save_pdf, pages)
