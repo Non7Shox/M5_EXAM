@@ -1,0 +1,11 @@
+def fibonacci_generator(N):
+    a, b = 0, 1
+    count = 0
+    while count < N:
+        yield a
+        a, b = b, a + b
+        count += 1
+
+N = int(input("N sonini kiriting: "))
+for fib_num in fibonacci_generator(N):
+    print(fib_num)
